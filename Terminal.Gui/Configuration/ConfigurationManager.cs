@@ -287,7 +287,7 @@ public static class ConfigurationManager
                        ?
 
                        // App resources
-                       .UpdateFromResource (Assembly.GetEntryAssembly ()!, embeddedStylesResourceName!)
+                       .UpdateFromResource ((Assembly.GetEntryAssembly () ?? Assembly.GetCallingAssembly ())!, embeddedStylesResourceName!)
                        ?
 
                        // App current directory
