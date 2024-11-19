@@ -59,6 +59,11 @@ public abstract class ConsoleDriver
     /// </summary>
     internal int Col { get; private set; }
 
+    /// <summary>
+    /// The position of the cursor.
+    /// </summary>
+    public Point CursorPosition => new Point (Col, Row);
+
     /// <summary>The number of columns visible in the terminal.</summary>
     internal virtual int Cols
     {
