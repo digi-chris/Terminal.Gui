@@ -326,7 +326,21 @@ public static class FakeConsole
     //	T:System.IO.IOException:
     //	An I/O error occurred.
     /// <summary></summary>
-    public static int CursorLeft { get; set; }
+    public static int CursorLeft
+    {
+        get
+        {
+            return _cursorLeft;
+        }
+        set
+        {
+            _cursorLeft = value;
+            OnCursorChanged.Invoke (null, EventArgs.Empty);
+        }
+    }
+    private static int _cursorLeft;
+
+    public static event EventHandler<EventArgs> OnCursorChanged;
 
     //
     // Summary:
@@ -346,7 +360,20 @@ public static class FakeConsole
     //	T:System.IO.IOException:
     //	An I/O error occurred.
     /// <summary></summary>
-    public static int CursorTop { get; set; }
+    public static int CursorTop
+    {
+        get
+        {
+            return _cursorTop;
+        }
+        set
+        {
+            _cursorTop = value;
+            OnCursorChanged?.Invoke (null, EventArgs.Empty);
+        }
+    }
+
+    private static int _cursorTop;
 
     //
     // Summary:
@@ -1206,7 +1233,9 @@ public static class FakeConsole
     //	An I/O error occurred.
     /// <summary></summary>
     /// <param name="value"></param>
-    public static void Write (char value) { _buffer [CursorLeft, CursorTop] = value; }
+    public static void Write (char value) { _buffer [CursorLeft, CursorTop] = value; OnWriteChar?.Invoke(null, value); }
+
+    public static event EventHandler<char> OnWriteChar;
 
     //
     // Summary:
