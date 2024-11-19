@@ -75,7 +75,7 @@ public abstract class ConsoleDriver
     ///     <see cref="UpdateScreen"/> is called.
     ///     <remarks>The format of the array is rows, columns. The first index is the row, the second index is the column.</remarks>
     /// </summary>
-    internal Cell [,]? Contents { get; set; }
+    public Cell [,]? Contents { get; set; }
 
     /// <summary>The leftmost column in the terminal.</summary>
     internal virtual int Left { get; set; } = 0;
