@@ -335,7 +335,7 @@ public static class FakeConsole
         set
         {
             _cursorLeft = value;
-            OnCursorChanged.Invoke (null, EventArgs.Empty);
+            //OnCursorChanged.Invoke (null, EventArgs.Empty);
         }
     }
     private static int _cursorLeft;
@@ -369,7 +369,6 @@ public static class FakeConsole
         set
         {
             _cursorTop = value;
-            OnCursorChanged?.Invoke (null, EventArgs.Empty);
         }
     }
 
@@ -883,6 +882,8 @@ public static class FakeConsole
         CursorTop = top;
         WindowLeft = Math.Max (Math.Min (left, BufferWidth - WindowWidth), 0);
         WindowTop = Math.Max (Math.Min (top, BufferHeight - WindowHeight), 0);
+
+        OnCursorChanged?.Invoke (null, EventArgs.Empty);
     }
 
     //
