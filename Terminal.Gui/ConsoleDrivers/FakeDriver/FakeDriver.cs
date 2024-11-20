@@ -110,6 +110,7 @@ public class FakeDriver : ConsoleDriver
         int savedRow = FakeConsole.CursorTop;
         int savedCol = FakeConsole.CursorLeft;
         bool savedCursorVisible = FakeConsole.CursorVisible;
+        FakeConsole.CursorVisible = false;
 
         var top = 0;
         var left = 0;
