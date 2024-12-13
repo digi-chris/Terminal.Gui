@@ -459,10 +459,12 @@ public class ListView : View, IDesignable
             {
                 // TODO: The Max check here is not needed because, by default, Viewport enforces staying w/in ContentArea (View.ScrollSettings).
                 Viewport = Viewport with { Y = _selected };
+                Console.WriteLine ("Viewport moved to " + Viewport.Y);
             }
             else if (Viewport.Height > 0 && _selected >= Viewport.Y + Viewport.Height)
             {
                 Viewport = Viewport with { Y = _selected - Viewport.Height + 1 };
+                Console.WriteLine ("Viewport moved to " + Viewport.Y);
             }
 
             SubviewLayout -= ListView_LayoutStarted;
@@ -904,6 +906,7 @@ public class ListView : View, IDesignable
     {
         if (_selected != _lastSelectedItem)
         {
+            Console.WriteLine ("Selected item changed - " + _selected);
             object value = _source?.Count > 0 ? _source.ToList () [_selected] : null;
             SelectedItemChanged?.Invoke (this, new ListViewItemEventArgs (_selected, value));
             _lastSelectedItem = _selected;
