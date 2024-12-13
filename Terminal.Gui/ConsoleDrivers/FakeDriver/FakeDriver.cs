@@ -201,6 +201,11 @@ public class FakeDriver : ConsoleDriver
                     FakeConsole.Write (c);
                 }
             }
+
+            if (updated)
+            {
+                Console.WriteLine("Screen updated at " + DateTime.Now.ToString ());
+            }
         }
 
         FakeConsole.CursorTop = 0;
