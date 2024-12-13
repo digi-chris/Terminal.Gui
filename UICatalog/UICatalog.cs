@@ -119,6 +119,12 @@ public class UICatalogApp
         Apply ();
     }
 
+    public static void Init()
+    {
+        _scenarios = Scenario.GetScenarios ();
+        _categories = Scenario.GetAllCategories ();
+    }
+
     private static int Main (string [] args)
     {
         Console.OutputEncoding = Encoding.Default;
