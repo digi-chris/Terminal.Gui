@@ -134,7 +134,7 @@ public abstract class ConsoleDriver
     {
         int runeWidth = -1;
         bool validLocation = IsValidLocation (rune, Col, Row);
-
+        
         if (Contents is null)
         {
             return;
