@@ -42,6 +42,11 @@ public partial class View // Drawing APIs
     /// </remarks>
     public void Draw ()
     {
+        //if (this.GetType ().Name != "ObjectBrowserWindow")
+        //{
+        //    Console.WriteLine ("View.Drawing.Draw() - " + this.GetType ().Name);
+        //}
+
         if (!CanBeVisible (this))
         {
             return;
@@ -52,6 +57,7 @@ public partial class View // Drawing APIs
         // TODO: This can be further optimized by checking NeedsDraw below and only clearing, drawing text, drawing content, etc. if it is true.
         if (NeedsDraw || SubViewNeedsDraw)
         {
+            //Console.WriteLine ("Draw - " + NeedsDraw + " || " + SubViewNeedsDraw + " (" + this.GetType ().Name + ")");
             // Draw the Border and Padding.
             // We clip to the frame to prevent drawing outside the frame.
             saved = ClipFrame ();
