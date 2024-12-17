@@ -1270,8 +1270,8 @@ public static class FakeConsole
         _buffer [CursorLeft, CursorTop].Char = value;
         _buffer [CursorLeft, CursorTop].ForeColor = ForegroundColor;
         _buffer [CursorLeft, CursorTop].BackColor = BackgroundColor;
-        OnWriteChar?.Invoke (null, (_buffer [CursorLeft, CursorTop], CursorLeft, CursorTop));
-        CursorLeft++;
+        //OnWriteChar?.Invoke (null, (_buffer [CursorLeft, CursorTop], CursorLeft, CursorTop));
+        //CursorLeft++;
     }
 
     public static event EventHandler<(BufferChar, int, int)> OnWriteChar;
