@@ -101,7 +101,7 @@ public class FakeDriver : ConsoleDriver
         return new MainLoop (_mainLoopDriver);
     }
 
-    public static event EventHandler<(Cell, int, int)> OnCellChanged;
+    //public static event EventHandler<(Cell, int, int)> OnCellChanged;
 
     public override bool UpdateScreen ()
     {
@@ -161,7 +161,7 @@ public class FakeDriver : ConsoleDriver
                         continue;
                     }
 
-                    OnCellChanged?.Invoke (null, (Contents [row, col], col, row));
+                    //OnCellChanged?.Invoke (null, (Contents [row, col], col, row));
                     if (lastCol == -1)
                     {
                         lastCol = col;
