@@ -10,6 +10,13 @@ namespace Terminal.Gui;
 /// <summary></summary>
 public static class FakeConsole
 {
+    public struct BufferChar
+    {
+        public char Char;
+        public ConsoleColor ForeColor;
+        public ConsoleColor BackColor;
+    }
+
 #pragma warning restore RCS1138 // Add summary to documentation comment.
 
     //
@@ -334,7 +341,20 @@ public static class FakeConsole
         }
         set
         {
-            _cursorLeft = value;
+            if (value < 0)
+            {
+                _cursorLeft = WindowWidth - 1;
+                CursorTop--;
+            }
+            else if (value >= WindowWidth)
+            {
+                _cursorLeft = 0;
+                CursorTop++;
+            }
+            else
+            {
+                _cursorLeft = value;
+            }
             //OnCursorChanged.Invoke (null, EventArgs.Empty);
         }
     }
@@ -368,7 +388,18 @@ public static class FakeConsole
         }
         set
         {
-            _cursorTop = value;
+            if (value < 0)
+            {
+                _cursorTop = 0;
+            }
+            else if (value >= WindowHeight)
+            {
+                _cursorTop = WindowHeight - 1;
+            }
+            else
+            {
+                _cursorTop = value;
+            }
         }
     }
 
@@ -500,12 +531,12 @@ public static class FakeConsole
     // Exceptions:
     //	T:System.IO.IOException:
     //	An I/O error occurred.
-    private static char [,] _buffer = new char [WindowWidth, WindowHeight];
+    private static BufferChar [,] _buffer = new BufferChar [WindowWidth, WindowHeight];
 
     /// <summary></summary>
     public static void Clear ()
     {
-        _buffer = new char [BufferWidth, BufferHeight];
+        _buffer = new BufferChar [BufferWidth, BufferHeight];
         SetCursorPosition (0, 0);
     }
 
@@ -848,7 +879,7 @@ public static class FakeConsole
     {
         BufferWidth = width;
         BufferHeight = height;
-        _buffer = new char [BufferWidth, BufferHeight];
+        _buffer = new BufferChar [BufferWidth, BufferHeight];
     }
 
     //
@@ -1234,10 +1265,18 @@ public static class FakeConsole
     //	An I/O error occurred.
     /// <summary></summary>
     /// <param name="value"></param>
-    public static void Write (char value) { _buffer [CursorLeft, CursorTop] = value; OnWriteChar?.Invoke(null, value); }
+    public static void Write (char value)
+    {
+        _buffer [CursorLeft, CursorTop].Char = value;
+        _buffer [CursorLeft, CursorTop].ForeColor = ForegroundColor;
+        _buffer [CursorLeft, CursorTop].BackColor = BackgroundColor;
+        OnWriteChar?.Invoke (null, (_buffer [CursorLeft, CursorTop], CursorLeft, CursorTop));
+        CursorLeft++;
+    }
 
-    public static event EventHandler<char> OnWriteChar;
+    public static event EventHandler<(BufferChar, int, int)> OnWriteChar;
 
+    /*
     //
     // Summary:
     //	Writes the specified array of Unicode characters to the standard output stream.
@@ -1260,6 +1299,7 @@ public static class FakeConsole
             _buffer [CursorLeft, CursorTop] += ch;
         }
     }
+    */
 
     //
     // Summary:
