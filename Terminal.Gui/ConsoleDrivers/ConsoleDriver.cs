@@ -3,7 +3,9 @@
 // ConsoleDriver.cs: Base class for Terminal.Gui ConsoleDriver implementations.
 //
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using ItinerantUniverse.Core.Terminal;
 
 namespace Terminal.Gui;
 
@@ -80,7 +82,10 @@ public abstract class ConsoleDriver
     ///     <see cref="UpdateScreen"/> is called.
     ///     <remarks>The format of the array is rows, columns. The first index is the row, the second index is the column.</remarks>
     /// </summary>
+    //public Cell [,]? Contents { get; set; }
     public Cell [,]? Contents { get; set; }
+
+    public ConsoleCharInfo [,]? ContentsAsCharInfo { get; set; }
 
     /// <summary>The leftmost column in the terminal.</summary>
     internal virtual int Left { get; set; } = 0;
@@ -161,6 +166,7 @@ public abstract class ConsoleDriver
                     // b) Ignoring any CMs that don't normalize
                     if (Col > 0)
                     {
+
                         if (Contents [Row, Col - 1].CombiningMarks.Count > 0)
                         {
                             // Just add this mark to the list
@@ -180,7 +186,7 @@ public abstract class ConsoleDriver
                             {
                                 // It normalized! We can just set the Cell to the left with the
                                 // normalized codepoint 
-                                Contents [Row, Col - 1].Rune = (Rune)normalized [0];
+                                Contents [Row, Col - 1].Rune = (Rune)normalized [0]; ContentsAsCharInfo! [Row, Col - 1] = Contents [Row, Col - 1].ToConsoleCharInfo ();
 
                                 // Ignore. Don't move to next column because we're already there
                             }
@@ -193,21 +199,21 @@ public abstract class ConsoleDriver
                             }
                         }
 
-                        Contents [Row, Col - 1].Attribute = CurrentAttribute;
+                        Contents [Row, Col - 1].Attribute = CurrentAttribute; ContentsAsCharInfo! [Row, Col - 1] = Contents [Row, Col - 1].ToConsoleCharInfo ();
                         Contents [Row, Col - 1].IsDirty = true;
                     }
                     else
                     {
                         // Most drivers will render a combining mark at col 0 as the mark
                         Contents [Row, Col].Rune = rune;
-                        Contents [Row, Col].Attribute = CurrentAttribute;
+                        Contents [Row, Col].Attribute = CurrentAttribute; ContentsAsCharInfo! [Row, Col] = Contents [Row, Col].ToConsoleCharInfo ();
                         Contents [Row, Col].IsDirty = true;
                         Col++;
                     }
                 }
                 else
                 {
-                    Contents [Row, Col].Attribute = CurrentAttribute;
+                    Contents [Row, Col].Attribute = CurrentAttribute; ContentsAsCharInfo! [Row, Col] = Contents [Row, Col].ToConsoleCharInfo ();
                     Contents [Row, Col].IsDirty = true;
 
                     if (Col > 0)
@@ -216,18 +222,18 @@ public abstract class ConsoleDriver
                         if (Contents [Row, Col - 1].Rune.GetColumns () > 1)
                         {
                             // Invalidate cell to left
-                            Contents [Row, Col - 1].Rune = Rune.ReplacementChar;
+                            Contents [Row, Col - 1].Rune = Rune.ReplacementChar; ContentsAsCharInfo! [Row, Col - 1] = Contents [Row, Col - 1].ToConsoleCharInfo ();
                             Contents [Row, Col - 1].IsDirty = true;
                         }
                     }
 
                     if (runeWidth < 1)
                     {
-                        Contents [Row, Col].Rune = Rune.ReplacementChar;
+                        Contents [Row, Col].Rune = Rune.ReplacementChar; ContentsAsCharInfo! [Row, Col] = Contents [Row, Col].ToConsoleCharInfo ();
                     }
                     else if (runeWidth == 1)
                     {
-                        Contents [Row, Col].Rune = rune;
+                        Contents [Row, Col].Rune = rune; ContentsAsCharInfo! [Row, Col] = Contents [Row, Col].ToConsoleCharInfo ();
 
                         if (Col < clipRect.Right - 1)
                         {
@@ -240,12 +246,12 @@ public abstract class ConsoleDriver
                         {
                             // We're at the right edge of the clip, so we can't display a wide character.
                             // TODO: Figure out if it is better to show a replacement character or ' '
-                            Contents [Row, Col].Rune = Rune.ReplacementChar;
+                            Contents [Row, Col].Rune = Rune.ReplacementChar; ContentsAsCharInfo! [Row, Col] = Contents [Row, Col].ToConsoleCharInfo ();
                         }
                         else if (!Clip.Contains (Col, Row))
                         {
                             // Our 1st column is outside the clip, so we can't display a wide character.
-                            Contents [Row, Col+1].Rune = Rune.ReplacementChar;
+                            Contents [Row, Col+1].Rune = Rune.ReplacementChar; ContentsAsCharInfo! [Row, Col + 1] = Contents [Row, Col + 1].ToConsoleCharInfo ();
                         }
                         else
                         {
@@ -255,7 +261,7 @@ public abstract class ConsoleDriver
                             {
                                 // Invalidate cell to right so that it doesn't get drawn
                                 // TODO: Figure out if it is better to show a replacement character or ' '
-                                Contents [Row, Col + 1].Rune = Rune.ReplacementChar;
+                                Contents [Row, Col + 1].Rune = Rune.ReplacementChar; ContentsAsCharInfo! [Row, Col + 1] = Contents [Row, Col + 1].ToConsoleCharInfo ();
                                 Contents [Row, Col + 1].IsDirty = true;
                             }
                         }
@@ -263,7 +269,7 @@ public abstract class ConsoleDriver
                     else
                     {
                         // This is a non-spacing character, so we don't need to do anything
-                        Contents [Row, Col].Rune = (Rune)' ';
+                        Contents [Row, Col].Rune = (Rune)' '; ContentsAsCharInfo! [Row, Col] = Contents [Row, Col].ToConsoleCharInfo ();
                         Contents [Row, Col].IsDirty = false;
                     }
 
@@ -289,7 +295,7 @@ public abstract class ConsoleDriver
                     // Col now points to the second column of the character. Ensure it doesn't
                     // Get rendered.
                     Contents [Row, Col].IsDirty = false;
-                    Contents [Row, Col].Attribute = CurrentAttribute;
+                    Contents [Row, Col].Attribute = CurrentAttribute; ContentsAsCharInfo! [Row, Col] = Contents [Row, Col].ToConsoleCharInfo ();
 
                     // TODO: Determine if we should wipe this out (for now now)
                     //Contents [Row, Col].Rune = (Rune)' ';
@@ -330,7 +336,7 @@ public abstract class ConsoleDriver
     /// <summary>Clears the <see cref="Contents"/> of the driver.</summary>
     internal void ClearContents ()
     {
-        Contents = new Cell [Rows, Cols];
+        Contents = new Cell [Rows, Cols]; ContentsAsCharInfo = new ConsoleCharInfo [Rows, Cols];
 
         //CONCURRENCY: Unsynchronized access to Clip isn't safe.
         // TODO: ClearContents should not clear the clip; it should only clear the contents. Move clearing it elsewhere.
@@ -349,7 +355,7 @@ public abstract class ConsoleDriver
                         Rune = (Rune)' ',
                         Attribute = new Attribute (Color.White, Color.Black),
                         IsDirty = true
-                    };
+                    }; ContentsAsCharInfo! [row, c] = Contents [row, c].ToConsoleCharInfo ();
                 }
                 _dirtyLines [row] = true;
             }
@@ -410,7 +416,7 @@ public abstract class ConsoleDriver
                     {
                         Rune = (rune != default ? rune : (Rune)' '),
                         Attribute = CurrentAttribute, IsDirty = true
-                    };
+                    }; ContentsAsCharInfo! [r, c] = Contents [r, c].ToConsoleCharInfo ();
                     _dirtyLines! [r] = true;
                 }
             }
