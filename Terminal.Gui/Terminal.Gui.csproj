@@ -112,6 +112,9 @@
   <ItemGroup>
     <Folder Include="Views\Scroll\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ItinerantUniverse\Core\Core.csproj" />
+  </ItemGroup>
   <!-- =================================================================== -->
   <!-- Nuget  -->
   <!-- =================================================================== -->
