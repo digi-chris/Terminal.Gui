@@ -1,4 +1,6 @@
-﻿namespace Terminal.Gui;
+﻿using ItinerantUniverse.Core.Terminal;
+
+namespace Terminal.Gui;
 
 /// <summary>
 ///     Represents a single row/column in a Terminal.Gui rendering surface (e.g. <see cref="LineCanvas"/> and
@@ -179,6 +181,11 @@ public record struct Cell (Attribute? Attribute = null, bool IsDirty = false, Ru
         }
 
         return lines;
+    }
+
+    public ConsoleCharInfo ToConsoleCharInfo()
+    {
+        return new ConsoleCharInfo ((char)Rune.Value, (ConsoleColor)Attribute.Value.Foreground.GetClosestNamedColor16 (), (ConsoleColor)Attribute.Value.Background.GetClosestNamedColor16 (), false, false);
     }
 
     /// <summary>
