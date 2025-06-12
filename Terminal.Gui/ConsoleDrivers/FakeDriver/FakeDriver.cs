@@ -236,6 +236,11 @@ public class FakeDriver : ConsoleDriver
         FakeConsole.CursorTop = savedRow;
         FakeConsole.CursorLeft = savedCol;
         FakeConsole.CursorVisible = savedCursorVisible;
+
+        if (updated)
+        {
+            ScreenUpdated ();
+        }
         return updated;
     }
 
